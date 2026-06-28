@@ -57,23 +57,25 @@ export default function BoardsPage() {
   }
 
   async function joinBoard() {
-    if (!inviteCode.trim()) return
-    setSaving(true)
-    setError('')
-    const { data: board } = await supabase
-      .from('boards')
-      .select()
-      .eq('invite_code', inviteCode.trim().toUpperCase())
-      .single()
-    if (!board) { setError('Board not found. Check the invite code.'); setSaving(false); return }
-    const already = boards.find(b => b.id === board.id)
-    if (already) { setError('You are already in this board.'); setSaving(false); return }
-    await supabase.from('board_members').insert({ board_id: board.id, user_id: user!.id })
-    setBoards(prev => [board, ...prev])
-    setShowJoin(false)
-    setInviteCode('')
-    setSaving(false)
-  }
+  if (!inviteCode.trim()) return
+  setSaving(true)
+  setError('')
+
+  const { data, error } = await supabase
+    .rpc('get_board_by_invite', { p_code: inviteCode.trim().toUpperCase() })
+
+  const board = data?.[0]
+  if (!board) { setError('Board not found. Check the invite code.'); setSaving(false); return }
+
+  const already = boards.find(b => b.id === board.id)
+  if (already) { setError('You are already in this board.'); setSaving(false); return }
+
+  await supabase.from('board_members').insert({ board_id: board.id, user_id: user!.id })
+  setBoards(prev => [board, ...prev])
+  setShowJoin(false)
+  setInviteCode('')
+  setSaving(false)
+}
 
   function copyCode(code: string) {
     navigator.clipboard.writeText(code)

@@ -7,6 +7,8 @@ interface Props {
   onSettle: (fromId: string, toId: string) => void
 }
 
+const vnd = (amount: number) =>
+  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(amount)
 export default function DebtSummary({ memberDebts, currentUserId, onSettle }: Props) {
   const totalDebt = memberDebts.reduce((sum, d) => sum + Math.max(d.owes, 0), 0)
 
@@ -38,9 +40,9 @@ export default function DebtSummary({ memberDebts, currentUserId, onSettle }: Pr
                   </span>
                 </div>
                 {debt.owes > 0 ? (
-                  <span className="badge-debt">${debt.owes.toFixed(2)}</span>
+                  <span className="badge-debt">{vnd(debt.owes)}</span>
                 ) : debt.owes < 0 ? (
-                  <span className="badge-credit">+${Math.abs(debt.owes).toFixed(2)}</span>
+                  <span className="badge-credit">{vnd(Math.abs(debt.owes))}</span>
                 ) : (
                   <span className="badge-settled">settled</span>
                 )}
@@ -54,7 +56,7 @@ export default function DebtSummary({ memberDebts, currentUserId, onSettle }: Pr
                     <span>{d.to.full_name || d.to.email.split('@')[0]}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">${d.amount.toFixed(2)}</span>
+                    <span className="text-xs text-slate-500">{vnd(d.amount)}</span>
                     {debt.user.id === currentUserId && (
                       <button
                         onClick={() => onSettle(debt.user.id, d.to.id)}
@@ -74,7 +76,7 @@ export default function DebtSummary({ memberDebts, currentUserId, onSettle }: Pr
       <div className="mt-4 pt-4 border-t border-slate-700">
         <div className="flex items-center justify-between text-xs text-slate-500">
           <span>Total outstanding</span>
-          <span className="text-rose-400 font-medium">${totalDebt.toFixed(2)}</span>
+          <span className="text-rose-400 font-medium">{vnd(totalDebt)}</span>
         </div>
         <p className="text-xs text-slate-600 mt-2 leading-relaxed">
           📧 Members with open debts receive a reminder email on the 1st of each month.
