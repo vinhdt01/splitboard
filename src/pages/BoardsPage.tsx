@@ -61,8 +61,8 @@ export default function BoardsPage() {
   setSaving(true)
   setError('')
 
-  const { data, error } = await supabase
-    .rpc('get_board_by_invite', { p_code: inviteCode.trim().toUpperCase() })
+ const { data } = await supabase
+  .rpc('get_board_by_invite', { p_code: inviteCode.trim().toUpperCase() })
 
   const board = data?.[0]
   if (!board) { setError('Board not found. Check the invite code.'); setSaving(false); return }
