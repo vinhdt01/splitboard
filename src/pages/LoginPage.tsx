@@ -53,7 +53,7 @@ export default function LoginPage() {
       </div>
 
       <p className="mt-6 text-xs text-slate-600">
-        Your data is stored securely in Supabase.
+        Developed By <a href="https://www.facebook.com/vinhthe.tv" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200 transition-colors">Vinh</a>
       </p>
     </div>
   )
