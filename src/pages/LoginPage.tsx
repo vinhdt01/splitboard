@@ -18,7 +18,7 @@ export default function LoginPage() {
           <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center text-2xl">
             ÷
           </div>
-          <h1 className="text-3xl font-display font-semibold text-white">SplitBoard</h1>
+          <h1 className="text-3xl font-display font-semibold text-white">Nhà Chung Thanh Đa</h1>
         </div>
         <p className="text-slate-400 text-base max-w-xs">
           Track shared overhead costs, split bills automatically, and get monthly debt reminders.

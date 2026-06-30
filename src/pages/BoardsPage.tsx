@@ -93,7 +93,7 @@ export default function BoardsPage() {
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-indigo-500 flex items-center justify-center text-base">÷</div>
-            <span className="font-display font-semibold text-white">SplitBoard</span>
+            <span className="font-display font-semibold text-white">Nhà Chung Thanh Đa</span>
           </div>
           <div className="flex items-center gap-3">
             {avatarUrl

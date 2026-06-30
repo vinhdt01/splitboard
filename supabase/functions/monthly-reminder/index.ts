@@ -45,7 +45,7 @@ Deno.serve(async () => {
       <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px; background: #0F172A; color: #f8fafc; border-radius: 12px;">
         <div style="text-align: center; margin-bottom: 24px;">
           <div style="display: inline-block; background: #6366F1; width: 48px; height: 48px; border-radius: 16px; line-height: 48px; font-size: 24px; margin-bottom: 8px;">÷</div>
-          <h1 style="font-size: 20px; font-weight: 600; margin: 0; color: white;">SplitBoard</h1>
+          <h1 style="font-size: 20px; font-weight: 600; margin: 0; color: white;">Nhà Chung Thanh Đa</h1>
         </div>
 
         <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Hi ${user.debtor_name ?? user.debtor_email} 👋</h2>
@@ -89,7 +89,7 @@ Deno.serve(async () => {
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: user.debtor_email,
-        subject: `💸 Monthly reminder: You owe $${totalAcrossBoards.toFixed(2)} on SplitBoard`,
+        subject: `💸 Monthly reminder: You owe $${totalAcrossBoards.toFixed(2)} on Nhà Chung Thanh Đa`,
         html,
       }),
     })
