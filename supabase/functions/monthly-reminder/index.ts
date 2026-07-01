@@ -80,21 +80,30 @@ Deno.serve(async () => {
       </div>
     `
 
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: user.debtor_email,
-        subject: `💸 Monthly reminder: You owe $${totalAcrossBoards.toFixed(2)} on Nhà Chung Thanh Đa`,
-        html,
-      }),
-    })
+   const res = await fetch('https://api.resend.com/emails', {
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${RESEND_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    from: FROM_EMAIL,
+    to: user.debtor_email,
+    subject: `💸 Monthly reminder: You owe $${totalAcrossBoards.toFixed(2)} on Nhà Chung Thanh Đa`,
+    html,
+  }),
+})
 
-    results.push(`${user.debtor_email}: ${res.ok ? 'sent' : 'failed'}`)
+const body = await res.text()
+
+console.log('RESEND STATUS', res.status)
+console.log('RESEND BODY', body)
+
+results.push(
+  `${user.debtor_email}: ${
+    res.ok ? 'sent' : `failed (${res.status}) ${body}`
+  }`
+)
   }
 
   return new Response(JSON.stringify({ sent: results.length, results }), {
