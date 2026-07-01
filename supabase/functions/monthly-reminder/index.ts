@@ -3,7 +3,8 @@
 // Trigger: set a pg_cron job or call from Supabase Dashboard → Cron
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
+const vnd = (amount: number) =>
+  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(amount)
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -38,7 +39,7 @@ Deno.serve(async () => {
     const totalAcrossBoards = userDebts.reduce((s, d) => s + d.total_owed, 0)
 
     const boardLines = userDebts
-      .map(d => `• ${d.board_name}: $${d.total_owed.toFixed(2)}`)
+      .map(d => `• ${d.board_name}: ${vnd(d.total_owed)}`)
       .join('\n')
 
     const html = `
@@ -57,12 +58,12 @@ Deno.serve(async () => {
           ${userDebts.map(d => `
             <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155;">
               <span style="color: #cbd5e1;">${d.board_name}</span>
-              <span style="color: #fb7185; font-weight: 600;">$${d.total_owed.toFixed(2)}</span>
+              <span style="color: #fb7185; font-weight: 600;">${vnd(d.total_owed)}</span>
             </div>
           `).join('')}
           <div style="display: flex; justify-content: space-between; padding-top: 12px; font-weight: 600;">
             <span>Total</span>
-            <span style="color: #fb7185;">$${totalAcrossBoards.toFixed(2)}</span>
+            <span style="color: #fb7185;">${vnd(totalAcrossBoards)}</span>
           </div>
         </div>
 
@@ -89,7 +90,7 @@ Deno.serve(async () => {
   body: JSON.stringify({
     from: FROM_EMAIL,
     to: user.debtor_email,
-    subject: `💸 Monthly reminder: You owe $${totalAcrossBoards.toFixed(2)} on Nhà Chung Thanh Đa`,
+    subject: `💸 Monthly reminder: You owe ${vnd(totalAcrossBoards)} on Nhà Chung Thanh Đa`,
     html,
   }),
 })
