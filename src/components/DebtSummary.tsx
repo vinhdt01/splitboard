@@ -4,12 +4,11 @@ import type { MemberDebt } from '../types/database'
 interface Props {
   memberDebts: MemberDebt[]
   currentUserId: string
-  onSettle: (fromId: string, toId: string) => void
 }
 
 const vnd = (amount: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(amount)
-export default function DebtSummary({ memberDebts, currentUserId, onSettle }: Props) {
+export default function DebtSummary({ memberDebts, currentUserId }: Props) {
   const totalDebt = memberDebts.reduce((sum, d) => sum + Math.max(d.owes, 0), 0)
 
   return (
@@ -57,14 +56,7 @@ export default function DebtSummary({ memberDebts, currentUserId, onSettle }: Pr
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-slate-500">{vnd(d.amount)}</span>
-                    {debt.user.id === currentUserId && (
-                      <button
-                        onClick={() => onSettle(debt.user.id, d.to.id)}
-                        className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
-                      >
-                        Mark paid
-                      </button>
-                    )}
+                     
                   </div>
                 </div>
               ))}

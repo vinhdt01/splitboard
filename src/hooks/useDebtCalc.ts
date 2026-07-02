@@ -23,9 +23,7 @@ export function useDebtCalc(
     for (const cost of filtered) {
       balances[cost.paid_by] = (balances[cost.paid_by] ?? 0) + cost.amount
       for (const split of cost.splits) {
-        if (!split.settled) {
-          balances[split.user_id] = (balances[split.user_id] ?? 0) - split.share
-        }
+        balances[split.user_id] = (balances[split.user_id] ?? 0) - split.share
       }
     }
 

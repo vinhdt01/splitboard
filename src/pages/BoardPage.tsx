@@ -86,18 +86,7 @@ export default function BoardPage() {
     setCosts(prev => prev.filter(c => c.id !== costId))
   }
 
-  async function handleSettle(fromId: string, toId: string) {
-    const costIds = costs.filter(c => c.paid_by === toId).map(c => c.id)
-    if (!costIds.length) return
-    await supabase
-      .from('cost_splits')
-      .update({ settled: true, settled_at: new Date().toISOString() })
-      .in('cost_id', costIds)
-      .eq('user_id', fromId)
-      .eq('settled', false)
-    fetchAll()
-  }
-
+ 
   function copyInvite() {
     if (!board) return
     navigator.clipboard.writeText(board.invite_code)
@@ -221,7 +210,6 @@ export default function BoardPage() {
             <DebtSummary
               memberDebts={memberDebts}
               currentUserId={user!.id}
-              onSettle={handleSettle}
             />
             <div className="card p-4 mt-4">
               <h3 className="font-display font-semibold text-white text-sm mb-3">Members ({members.length})</h3>
