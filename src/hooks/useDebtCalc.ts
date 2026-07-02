@@ -8,7 +8,6 @@ export function useDebtCalc(
   filterMonth?: number | 'all'
 ) {
   return useMemo(() => {
-    // Filter costs by month/year if provided
     const filtered = costs.filter(c => {
       if (!filterYear) return true
       const d = new Date(c.created_at)
@@ -17,47 +16,45 @@ export function useDebtCalc(
       return yearMatch && monthMatch
     })
 
-    const balances: Record<string, number> = {}
-    members.forEach(m => { balances[m.id] = 0 })
+    // pairDebts[debtor_id][creditor_id] = amount owed
+    const pairDebts: Record<string, Record<string, number>> = {}
 
     for (const cost of filtered) {
-      balances[cost.paid_by] = (balances[cost.paid_by] ?? 0) + cost.amount
       for (const split of cost.splits) {
-        balances[split.user_id] = (balances[split.user_id] ?? 0) - split.share
+        // skip if this split belongs to the payer (they don't owe themselves)
+        if (split.user_id === cost.paid_by) continue
+
+        if (!pairDebts[split.user_id]) pairDebts[split.user_id] = {}
+        pairDebts[split.user_id][cost.paid_by] =
+          (pairDebts[split.user_id][cost.paid_by] ?? 0) + split.share
       }
     }
 
-    const debts: { from: string; to: string; amount: number }[] = []
-    const pos = Object.entries(balances).filter(([, v]) => v > 0.01).sort((a, b) => b[1] - a[1])
-    const neg = Object.entries(balances).filter(([, v]) => v < -0.01).sort((a, b) => a[1] - b[1])
-
-    let i = 0, j = 0
-    const posArr = pos.map(([id, v]) => ({ id, v }))
-    const negArr = neg.map(([id, v]) => ({ id, v }))
-
-    while (i < posArr.length && j < negArr.length) {
-      const owed = posArr[i].v
-      const owes = Math.abs(negArr[j].v)
-      const amount = Math.min(owed, owes)
-      if (amount > 0.01) {
-        debts.push({ from: negArr[j].id, to: posArr[i].id, amount: Math.round(amount * 100) / 100 })
-      }
-      posArr[i].v -= amount
-      negArr[j].v += amount
-      if (posArr[i].v < 0.01) i++
-      if (Math.abs(negArr[j].v) < 0.01) j++
-    }
-
+    // Build memberDebts from pairDebts
     const memberDebts: MemberDebt[] = members.map(user => {
-      const details = debts
-        .filter(d => d.from === user.id)
-        .map(d => ({ to: members.find(m => m.id === d.to)!, amount: d.amount }))
-        .filter(d => d.to)
+      const details = Object.entries(pairDebts[user.id] ?? {})
+        .map(([toId, amount]) => ({
+          to: members.find(m => m.id === toId)!,
+          amount: Math.round(amount),
+        }))
+        .filter(d => d.to && d.amount > 0)
+
       const owes = details.reduce((sum, d) => sum + d.amount, 0)
-      const owed = debts.filter(d => d.to === user.id).reduce((sum, d) => sum + d.amount, 0)
-      return { user, owes: Math.round((owes - owed) * 100) / 100, details }
+
+      // how much others owe this user
+      const owed = members.reduce((sum, m) => {
+        return sum + (pairDebts[m.id]?.[user.id] ?? 0)
+      }, 0)
+
+      return {
+        user,
+        owes: Math.round(owes - owed),
+        details,
+      }
     })
 
-    return { balances, debts, memberDebts }
+    const totalOutstanding = memberDebts.reduce((sum, d) => sum + Math.max(d.owes, 0), 0)
+
+    return { memberDebts, balances: {}, debts: [], totalOutstanding }
   }, [costs, members, filterYear, filterMonth])
 }
