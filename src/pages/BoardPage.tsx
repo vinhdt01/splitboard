@@ -144,8 +144,8 @@ export default function BoardPage() {
           <StatCard label="Members" value={String(members.length)} />
           <StatCard
             label="Your share"
-            value={vnd(memberDebts.find(d => d.user.id === user?.id)?.owes ?? 0)}
-            accent={memberDebts.find(d => d.user.id === user?.id)?.owes ?? 0}
+            value={vnd(memberDebts.find(d => d.user.id === user?.id)?.details.reduce((s, d) => s + d.amount, 0) ?? 0)}
+            accent={memberDebts.find(d => d.user.id === user?.id)?.details.reduce((s, d) => s + d.amount, 0) ?? 0}
           />
         </div>
 

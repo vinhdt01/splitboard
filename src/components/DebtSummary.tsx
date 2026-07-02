@@ -38,10 +38,8 @@ export default function DebtSummary({ memberDebts, currentUserId }: Props) {
                     {debt.user.id === currentUserId ? <span className="text-slate-500 font-normal"> (you)</span> : ''}
                   </span>
                 </div>
-                {debt.owes > 0 ? (
-                  <span className="badge-debt">{vnd(debt.owes)}</span>
-                ) : debt.owes < 0 ? (
-                  <span className="badge-credit">{vnd(Math.abs(debt.owes))}</span>
+                {debt.details.length > 0 ? (
+                  <span className="badge-debt">{vnd(debt.details.reduce((s, d) => s + d.amount, 0))}</span>
                 ) : (
                   <span className="badge-settled">settled</span>
                 )}
