@@ -30,7 +30,7 @@ export default function BoardPage() {
   const [selectedYear, setSelectedYear] = useState(currentYear)
   const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(new Date().getMonth())
 
-  const { memberDebts } = useDebtCalc(costs, members)
+  const { memberDebts } = useDebtCalc(costs, members, selectedYear, selectedMonth)
 
   const fetchAll = useCallback(async () => {
     if (!boardId) return

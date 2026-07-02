@@ -17,6 +17,8 @@ interface DebtRow {
   debtor_id: string
   debtor_email: string
   debtor_name: string | null
+  creditor_email: string
+  creditor_name: string | null
   board_name: string
   total_owed: number
 }
@@ -42,45 +44,52 @@ Deno.serve(async () => {
       .map(d => `• ${d.board_name}: ${vnd(d.total_owed)}`)
       .join('\n')
 
-    const html = `
-      <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px; background: #0F172A; color: #f8fafc; border-radius: 12px;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <div style="display: inline-block; background: #6366F1; width: 48px; height: 48px; border-radius: 16px; line-height: 48px; font-size: 24px; margin-bottom: 8px;">÷</div>
-          <h1 style="font-size: 20px; font-weight: 600; margin: 0; color: white;">Nhà Chung Thanh Đa</h1>
+   const html = `
+  <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px; background: #0F172A; color: #f8fafc; border-radius: 12px;">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <div style="display: inline-block; background: #6366F1; width: 48px; height: 48px; border-radius: 16px; line-height: 48px; font-size: 24px; margin-bottom: 8px;">÷</div>
+      <h1 style="font-size: 20px; font-weight: 600; margin: 0; color: white;">Xứ Sở Thanh Đa</h1>
+    </div>
+
+    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Xin chào ${user.debtor_name ?? user.debtor_email} 👋</h2>
+    <p style="color: #94a3b8; margin-bottom: 24px;">
+      Đây là nhắc nhở hàng tháng của bạn. Bạn đang có các khoản nợ chưa thanh toán:
+    </p>
+
+    ${userDebts.map(d => `
+      <div style="background: #1E293B; border: 1px solid #334155; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+        <div style="font-weight: 600; color: #818cf8; font-size: 14px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #334155;">
+          📋 ${d.board_name}
         </div>
-
-        <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Hi ${user.debtor_name ?? user.debtor_email} 👋</h2>
-        <p style="color: #94a3b8; margin-bottom: 24px;">
-          This is your monthly reminder. You have outstanding debts on SplitBoard:
-        </p>
-
-        <div style="background: #1E293B; border: 1px solid #334155; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
-          ${userDebts.map(d => `
-            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155;">
-              <span style="color: #cbd5e1;">${d.board_name}</span>
-              <span style="color: #fb7185; font-weight: 600;">${vnd(d.total_owed)}</span>
-            </div>
-          `).join('')}
-          <div style="display: flex; justify-content: space-between; padding-top: 12px; font-weight: 600;">
-            <span>Total</span>
-            <span style="color: #fb7185;">${vnd(totalAcrossBoards)}</span>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="color: #cbd5e1; font-size: 14px; line-height:24px;">
+            <span style="color: #f8fafc; font-weight: 500;">${user.debtor_name ?? user.debtor_email}</span>
+            <span style="color: #475569; margin: 0 8px;">nợ</span>
+            <span style="color: #f8fafc; font-weight: 500;">${d.creditor_name ?? d.creditor_email}: &nbsp;</span>
           </div>
+          <span style="color: #fb7185; font-weight: 700; font-size: 16px;">${vnd(d.total_owed)}</span>
         </div>
-
-        <div style="text-align: center;">
-          <a href="${Deno.env.get('APP_URL') ?? 'https://yourapp.com'}/boards"
-             style="background: #6366F1; color: white; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 500; display: inline-block;">
-            View my boards
-          </a>
-        </div>
-
-        <p style="color: #475569; font-size: 12px; text-align: center; margin-top: 24px;">
-          You receive this monthly because you're a SplitBoard member with open debts.<br/>
-          Log in to mark debts as settled.
-        </p>
       </div>
-    `
+    `).join('')}
 
+    <div style="background: #1E293B; border: 1px solid #6366F1; border-radius: 10px; padding: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;line-height:24px;">
+      <span style="font-weight: 600; color: #f8fafc;">Tổng nợ của bạn:&nbsp;</span>
+      <span style="color: #fb7185; font-weight: 700; font-size: 20px;">${vnd(totalAcrossBoards)}</span>
+    </div>
+
+    <div style="text-align: center;">
+      <a href="${Deno.env.get('APP_URL') ?? 'https://yourapp.com'}/boards"
+         style="background: #6366F1; color: white; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 500; display: inline-block;">
+        Xem các board của tôi →
+      </a>
+    </div>
+
+    <p style="color: #475569; font-size: 12px; text-align: center; margin-top: 24px;">
+      Bạn nhận được email này hàng tháng vì bạn là thành viên Xứ Sở Thanh Đa có khoản nợ chưa thanh toán.<br/>
+      Đăng nhập để đánh dấu đã thanh toán.
+    </p>
+  </div>
+`
    const res = await fetch('https://api.resend.com/emails', {
   method: 'POST',
   headers: {
