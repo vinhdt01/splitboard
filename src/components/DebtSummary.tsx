@@ -153,11 +153,11 @@ export default function DebtSummary({ memberDebts, currentUserId }: Props) {
           <div className="space-y-2">
             {settlements.map(settlement => (
               <div key={`${settlement.from.id}-${settlement.to.id}`} className="flex items-center gap-2 rounded-lg bg-slate-800/60 p-3">
-                <span className="min-w-0 flex-1 truncate text-sm text-slate-200">
+                <span title={memberName(settlement.from)} className="min-w-0 flex-1 truncate text-sm text-slate-200">
                   {memberName(settlement.from)}{settlement.from.id === currentUserId ? ' (you)' : ''}
                 </span>
                 <ArrowRight size={14} className="shrink-0 text-indigo-400" />
-                <span className="min-w-0 flex-1 truncate text-sm text-slate-200">
+                <span title={memberName(settlement.to)} className="min-w-0 flex-1 truncate text-sm text-slate-200">
                   {memberName(settlement.to)}{settlement.to.id === currentUserId ? ' (you)' : ''}
                 </span>
                 <span className="badge-debt shrink-0">{vnd(settlement.amount)}</span>
